@@ -1,54 +1,61 @@
-import { Component } from "react";
-import styles from "./App.module.css";
+import { useState, useEffect } from "react";
+
 import Statistics from "./components/Feedback/Statistics";
 import Feedback from "./components/Feedback/Feedback";
 import Section from "./components/Feedback/Section";
+import styles from "./App.module.css";
 
-class App extends Component {
-	state = {
-		good: 0,
-		neutral: 0,
-		bad: 0,
-	};
+export default function App() {
+  const [good, setGood] = useState(0);
+  const [neutral, setNeutral] = useState(0);
+  const [bad, setBad] = useState(0);
+  const [total, setTotal] = useState(0);
+  const [positive, setPositive] = useState(0);
 
-	handleAddFeadback = (option) => {
-		this.setState((prevState) => ({ [option]: prevState[option] + 1 }));
-	};
+  const handleChange = (e) => {
+    switch (e.target.name) {
+      case "good":
+        setGood((state) => state + 1);
+        break;
+      case "neutral":
+        setNeutral((state) => state + 1);
+        break;
+      case "bad":
+        setBad((state) => state + 1);
+        break;
+      default:
+        return;
+    }
+  };
 
-	countTotalFeedback = () => {
-		const { good, neutral, bad } = this.state;
-		return good + neutral + bad;
-	};
+  useEffect(() => {
+    setTotal(good + neutral + bad);
+  }, [good, neutral, bad]);
 
-	countPositiveFeedbackPercentage = () => {
-		return this.countTotalFeedback() === 0
-			? 0
-			: Math.round((this.state.good / this.countTotalFeedback()) * 100);
-	};
+  useEffect(() => {
+    setPositive(() => {
+      return Math.round((good / total) * 100);
+    });
+  }, [good, total]);
 
-	render() {
-		const { good, neutral, bad } = this.state;
-		return (
-			<div className={styles.container}>
-				<Section title="Please leave feedback">
-					<Feedback
-						options={["good", "neutral", "bad"]}
-						onLeaveFeedback={this.handleAddFeadback}
-					/>
-				</Section>
+  return (
+    <div className={styles.container}>
+      <Section title="Please leave feedback">
+        <Feedback
+          options={["good", "neutral", "bad"]}
+          onLeaveFeedback={handleChange}
+        />
+      </Section>
 
-				<Section title="Statistics">
-					<Statistics
-						good={good}
-						neutral={neutral}
-						bad={bad}
-						total={this.countTotalFeedback()}
-						positivePercentage={this.countPositiveFeedbackPercentage()}
-					/>
-				</Section>
-			</div>
-		);
-	}
+      <Section title="Statistics">
+        <Statistics
+          good={good}
+          neutral={neutral}
+          bad={bad}
+          total={total}
+          positivePercentage={positive}
+        />
+      </Section>
+    </div>
+  );
 }
-
-export default App;
