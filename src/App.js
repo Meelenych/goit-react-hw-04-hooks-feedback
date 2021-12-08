@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-
 import Statistics from "./components/Feedback/Statistics";
 import Feedback from "./components/Feedback/Feedback";
 import Section from "./components/Feedback/Section";
